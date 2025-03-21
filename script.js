@@ -2,14 +2,217 @@
 ;(() => {
   const featherIcons = {
     "shopping-cart":
-      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" class="cart-icon" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" class="cart-icon" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 2 1.61h9.72a2 2 0 0 2-1.61L23 6H6"></path></svg>',
     search:
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
   }
 
-    window.onload = function() {
-    alert("Welcome to Maki City!");
-  };
+  // Detect device type for optimized UI
+  function detectDeviceType() {
+    const width = window.innerWidth
+    if (width < 768) {
+      document.body.setAttribute("data-device", "mobile")
+      return "mobile"
+    } else if (width < 1024) {
+      document.body.setAttribute("data-device", "tablet")
+      return "tablet"
+    } else {
+      document.body.setAttribute("data-device", "desktop")
+      return "desktop"
+    }
+  }
+
+  // Update device type on resize
+  window.addEventListener("resize", detectDeviceType)
+
+  // Desktop-specific enhancements
+  function enhanceDesktopUI() {
+    // Add hover effects for desktop
+    document.querySelectorAll("button, .nav-link, .cart-icon-wrapper").forEach((el) => {
+      el.classList.add("desktop-hover-effect")
+    })
+
+    const navLinks = document.querySelectorAll(".nav-link")
+    navLinks.forEach((link) => {
+      link.classList.add("desktop-nav")
+    })
+
+    document.querySelectorAll(".modal-content").forEach((modal) => {
+      modal.classList.add("desktop-modal")
+    })
+
+    addKeyboardShortcuts()
+
+    enhanceScrolling()
+  }
+
+
+  // Mobile-specific enhancements
+  function enhanceMobileUI() {
+    // Add touch-friendly styles
+    document.querySelectorAll("button, .nav-link, .cart-icon-wrapper").forEach((el) => {
+      el.classList.add("mobile-touch-target")
+    })
+
+    document.querySelectorAll(".modal-content").forEach((modal) => {
+      modal.classList.add("mobile-modal")
+    })
+
+    enhanceMobileScrolling()
+  }
+
+
+  // Add keyboard shortcuts for desktop
+  function addKeyboardShortcuts() {
+    document.addEventListener("keydown", (e) => {
+      // ESC key to close modals
+      if (e.key === "Escape") {
+        const modals = document.querySelectorAll(".modal:not(.hidden), #cart-sidebar:not(.hidden)")
+        if (modals.length > 0) {
+          e.preventDefault()
+          // Already handled in existing code
+        }
+      }
+
+      // Ctrl+/ to focus search
+      if (e.key === "/" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        const searchInput = document.querySelector(".search-input")
+        if (searchInput) {
+          searchInput.focus()
+        }
+      }
+
+      // Ctrl+B to toggle cart
+      if (e.key === "b" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        const cartSidebar = document.getElementById("cart-sidebar")
+        if (cartSidebar) {
+          if (cartSidebar.classList.contains("hidden")) {
+            window.cart.toggleCart()
+          } else {
+            window.cart.toggleCart()
+          }
+        }
+      }
+    })
+  }
+
+  // Enhance scrolling experience for desktop
+  function enhanceScrolling() {
+    // Add smooth scrolling to all internal links
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", (e) => {
+        // Already handled in existing code
+      })
+    })
+
+    addScrollToTopButton()
+  }
+
+  // Enhance scrolling experience for mobile
+  function enhanceMobileScrolling() {
+    // Add scroll to top button
+    addScrollToTopButton()
+  }
+
+  function addScrollToTopButton() {
+    const button = document.createElement("button")
+    button.className = "scroll-to-top-btn hidden"
+    button.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  `
+    button.setAttribute("aria-label", "Scroll to top")
+    document.body.appendChild(button)
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        button.classList.remove("hidden")
+      } else {
+        button.classList.add("hidden")
+      }
+    })
+
+    button.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      })
+    })
+  }
+
+
+  function addEnhancementStyles() {
+    const styleElement = document.createElement("style")
+    styleElement.textContent = `
+    /* Desktop optimizations */
+    .desktop-hover-effect {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .desktop-hover-effect:hover {
+      transform: translateY(-2px);
+    }
+    
+    .desktop-nav {
+      position: relative;
+    }
+    
+    .desktop-modal {
+      max-width: 600px;
+    }
+    
+    /* Mobile optimizations */
+    .mobile-touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .mobile-modal {
+      width: 95%;
+      max-width: 400px;
+    }
+    
+    /* Enhanced touch targets for mobile */
+    @media (max-width: 767px) {
+      button, 
+      .nav-link, 
+      .cart-icon-wrapper,
+      input[type="radio"] + span,
+      input[type="checkbox"] + span {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .category-tab {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  `
+    document.head.appendChild(styleElement)
+  }
+
+  window.onload = () => {
+    // Detect device type
+    const deviceType = detectDeviceType()
+
+    // Apply device-specific enhancements
+    if (deviceType === "desktop") {
+      enhanceDesktopUI()
+    } else {
+      enhanceMobileUI()
+    }
+
+    // Add enhancement styles
+    addEnhancementStyles()
+  }
 
   function replaceIcons() {
     document.querySelectorAll("[data-feather]").forEach((el) => {
@@ -27,7 +230,73 @@
   }
 })()
 
-// Document ready event
+function adjustHeroHeight() {
+  const heroSection = document.querySelector(".hero-section")
+  if (heroSection) {
+    // Set the hero section height to exactly the viewport height
+    const viewportHeight = window.innerHeight
+    heroSection.style.height = `${viewportHeight}px`
+  }
+}
+
+window.addEventListener("resize", adjustHeroHeight)
+
+// function to handle review form submission
+window.handleReviewSubmit = (event) => {
+  event.preventDefault()
+  const form = event.target
+  const nameInput = form.querySelector("#review-name")
+  const emailInput = form.querySelector("#review-email")
+  const ratingInput = form.querySelector("#review-rating")
+  const titleInput = form.querySelector("#review-title")
+  const reviewInput = form.querySelector("#review-text")
+
+  let isValid = true
+
+  if (!nameInput.value.trim()) {
+    showToast("Please enter your name", "error")
+    isValid = false
+  }
+
+  if (!emailInput.value.trim()) {
+    showToast("Please enter your email", "error")
+    isValid = false
+  } else if (!validateEmail(emailInput.value.trim())) {
+    showToast("Please enter a valid email address", "error")
+    isValid = false
+  }
+
+  if (ratingInput.value === "0") {
+    showToast("Please select a rating", "error")
+    isValid = false
+  }
+
+  if (!titleInput.value.trim()) {
+    showToast("Please enter a review title", "error")
+    isValid = false
+  }
+
+  if (!reviewInput.value.trim()) {
+    showToast("Please enter your review", "error")
+    isValid = false
+  }
+
+  if (!isValid) {
+    return
+  }
+
+  showSuccessMessage("Thank you for your review! It will be published after moderation.")
+
+  form.reset()
+
+  document.querySelectorAll(".star-btn").forEach((btn) => {
+    btn.classList.remove("text-yellow-500")
+    btn.classList.add("text-gray-300")
+  })
+  document.getElementById("rating-text").textContent = "Select your rating"
+  document.getElementById("review-rating").value = "0"
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Mobile menu toggle
   const mobileMenuButton = document.getElementById("mobile-menu-button")
@@ -37,17 +306,17 @@ document.addEventListener("DOMContentLoaded", () => {
     mobileMenuButton.addEventListener("click", () => {
       mobileMenu.classList.toggle("hidden")
     })
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobileMenu.classList.add("hidden")
+      })
+    })
   }
 
-  // Close mobile menu when clicking on a link
-  document.querySelectorAll("#mobile-menu .nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-      mobileMenu.classList.add("hidden")
-    })
-  })
-
   // Smooth scrolling for navigation links
-  document.querySelectorAll(".nav-link").forEach((anchor) => {
+  document.querySelectorAll(".nav-link, .mobile-nav-link").forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       e.preventDefault()
       const targetId = this.getAttribute("href")
@@ -91,8 +360,6 @@ document.addEventListener("DOMContentLoaded", () => {
     requestCallForm.addEventListener("submit", (e) => {
       e.preventDefault()
 
-      // Here you would typically send the data to your server
-      // For demo purposes, we'll just show a success message
       showSuccessMessage("We'll call you back soon!")
 
       // Close the modal
@@ -137,8 +404,8 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault()
     const form = event.target
     const nameInput = form.querySelector("#name")
-    const phoneInput = form.querySelector("#phone")
     const emailInput = form.querySelector("#email")
+    const subjectInput = form.querySelector("#subject")
     const messageInput = form.querySelector("#message")
     const submitButton = form.querySelector("button[type='submit']")
     const buttonText = submitButton.querySelector(".button-text")
@@ -158,16 +425,6 @@ document.addEventListener("DOMContentLoaded", () => {
       clearInputError(nameInput)
     }
 
-    if (!phoneInput.value.trim()) {
-      showInputError(phoneInput, "Please enter your phone number")
-      isValid = false
-    } else if (!validatePhone(phoneInput.value.trim())) {
-      showInputError(phoneInput, "Please enter a valid Philippine mobile number")
-      isValid = false
-    } else {
-      clearInputError(phoneInput)
-    }
-
     if (!emailInput.value.trim()) {
       showInputError(emailInput, "Please enter your email")
       isValid = false
@@ -176,6 +433,13 @@ document.addEventListener("DOMContentLoaded", () => {
       isValid = false
     } else {
       clearInputError(emailInput)
+    }
+
+    if (!subjectInput.value.trim()) {
+      showInputError(subjectInput, "Please enter a subject")
+      isValid = false
+    } else {
+      clearInputError(subjectInput)
     }
 
     if (!messageInput.value.trim()) {
@@ -226,8 +490,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return
     }
 
-    // Here you would typically send the data to your server
-    // For demo purposes, we'll just show a success message
     showSuccessMessage("Thank you for subscribing to our newsletter!")
 
     // Reset form
@@ -313,17 +575,17 @@ document.addEventListener("DOMContentLoaded", () => {
           const itemElement = document.createElement("div")
           itemElement.className = "cart-item cart-item-added"
           itemElement.innerHTML = `
-            <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='placeholder.svg?height=60&width=60'">
-            <div class="cart-item-details">
-              <div class="cart-item-name">${item.name}</div>
-              <div class="cart-item-price">₱${item.price}</div>
-              <div class="quantity-control">
-                <span class="quantity-btn decrease-quantity" data-name="${item.name}" role="button" tabindex="0" aria-label="Decrease quantity">-</span>
-                <span class="quantity-value">${item.quantity}</span>
-                <span class="quantity-btn increase-quantity" data-name="${item.name}" role="button" tabindex="0" aria-label="Increase quantity">+</span>
-              </div>
+          <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='placeholder.svg?height=60&width=60'">
+          <div class="cart-item-details">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">₱${item.price}</div>
+            <div class="quantity-control">
+              <span class="quantity-btn decrease-quantity" data-name="${item.name}" role="button" tabindex="0" aria-label="Decrease quantity">-</span>
+              <span class="quantity-value">${item.quantity}</span>
+              <span class="quantity-btn increase-quantity" data-name="${item.name}" role="button" tabindex="0" aria-label="Increase quantity">+</span>
             </div>
-          `
+          </div>
+        `
           cartItemsContainer.appendChild(itemElement)
         })
 
@@ -439,16 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.showToast("Cart cleared")
     },
 
-    saveCart() {
-      localStorage.setItem(
-        "makiCityCart",
-        JSON.stringify({
-          items: this.items,
-          total: this.total,
-        }),
-      )
-    },
-
     saveCartForLater() {
       if (this.items.length === 0) {
         this.showToast("Your cart is empty", "error")
@@ -514,6 +766,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Close cart sidebar
       this.toggleCart()
+    },
+
+    saveCart() {
+      localStorage.setItem(
+        "makiCityCart",
+        JSON.stringify({
+          items: this.items,
+          total: this.total,
+        }),
+      )
     },
 
     loadCart() {
@@ -783,10 +1045,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to create menu items by category
   function createMenuSection(categoryName, items) {
     const sectionContainer = document.createElement("div")
-    sectionContainer.className = "mb-16"
+    sectionContainer.className = "mb-4 md:mb-6" // Reduced from mb-8 md:mb-12
 
     const sectionTitle = document.createElement("h3")
-    sectionTitle.className = "text-2xl md:text-3xl font-bold mb-8"
+    sectionTitle.className = "text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-3" // Reduced from mb-4 md:mb-6
     sectionTitle.style.color = "#432414"
     sectionTitle.textContent = categoryName
     sectionContainer.appendChild(sectionTitle)
@@ -821,23 +1083,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const cardInner = document.createElement("div")
       cardInner.className = "bg-[#eeeeee] rounded-lg shadow-lg overflow-hidden hover-scale h-full"
       cardInner.innerHTML = `
-        <div class="relative">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover" loading="lazy" onerror="this.src='placeholder.svg?height=192&width=384'">
-          <div class="absolute top-2 right-2 bg-yellow-500 text-brown-900 px-2 py-1 rounded-full text-sm font-bold">
-            ₱${item.price}
-          </div>
-        </div>
-        <div class="p-4">
-          <h4 class="font-bold text-lg mb-2 text-brown-900">${item.name}</h4>
-          <p class="text-brown-600 mb-4 h-16 overflow-hidden">${item.description}</p>
-          <div class="flex justify-end">
-            <button class="bg-yellow-500 text-brown-900 px-4 py-2 rounded-lg hover:bg-yellow-600 transition add-to-cart-btn focus:outline-none focus:ring-2 focus:ring-yellow-400" 
-                    data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}' aria-label="Add ${item.name} to cart">
-            Add to Cart
-          </button>
+      <div class="relative">
+        <img src="${item.image}" alt="${item.name}" class="w-full h-36 md:h-48 object-cover" loading="lazy" onerror="this.src='placeholder.svg?height=192&width=384'">
+        <div class="absolute top-2 right-2 bg-yellow-500 text-brown-900 px-2 py-1 rounded-full text-sm font-bold">
+          ₱${item.price}
         </div>
       </div>
-    `
+      <div class="p-3 md:p-4">
+        <h4 class="font-bold text-base md:text-lg mb-1 md:mb-2 text-brown-900">${item.name}</h4>
+        <p class="text-brown-600 mb-3 md:mb-4 text-sm md:text-base h-12 md:h-16 overflow-hidden">${item.description}</p>
+        <div class="flex justify-end">
+          <button class="bg-yellow-500 text-brown-900 px-3 md:px-4 py-2 rounded-lg hover:bg-yellow-600 transition add-to-cart-btn focus:outline-none focus:ring-2 focus:ring-yellow-400" 
+                  data-item='${JSON.stringify(item).replace(/'/g, "&#39;")}' aria-label="Add ${item.name} to cart">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  `
       card.appendChild(cardInner)
       slider.appendChild(card)
     })
@@ -956,10 +1218,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleSwipe() {
       const swipeThreshold = 50
       if (touchEndX < touchStartX - swipeThreshold) {
-        // Swipe left, go to next
+        // Swipe left - go to next
         nextButton.click()
       } else if (touchEndX > touchStartX + swipeThreshold) {
-        // Swipe right, go to previous
+        // Swipe right - go to previous
         prevButton.click()
       }
     }
@@ -1017,10 +1279,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuContainer = document.getElementById("menu-container")
     if (menuContainer) {
       menuContainer.innerHTML = `
-        <div class="loading-spinner flex justify-center py-8">
-          <div class="spinner"></div>
-        </div>
-      `
+      <div class="loading-spinner flex justify-center py-8">
+        <div class="spinner"></div>
+      </div>
+    `
     }
 
     // Update active tab
@@ -1126,86 +1388,88 @@ document.addEventListener("DOMContentLoaded", () => {
   filterMenu("all")
 
   // Add search functionality with fuzzy search
-  const searchInput = document.querySelector(".search-input")
-  if (searchInput) {
-    searchInput.addEventListener("input", function () {
-      const searchTerm = this.value.toLowerCase().trim()
+  const searchInputs = document.querySelectorAll(".search-input")
+  if (searchInputs.length > 0) {
+    searchInputs.forEach((searchInput) => {
+      searchInput.addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase().trim()
 
-      if (searchTerm === "") {
-        // If search is empty, revert to current category view
-        filterMenu(currentCategory)
-        return
-      }
+        if (searchTerm === "") {
+          // If search is empty, revert to current category view
+          filterMenu(currentCategory)
+          return
+        }
 
-      // Clear the menu container
-      const menuContainer = document.getElementById("menu-container")
-      if (menuContainer) {
-        menuContainer.innerHTML = `
-        <div class="loading-spinner flex justify-center py-8">
-          <div class="spinner"></div>
-        </div>
-      `
+        // Clear the menu container
+        const menuContainer = document.getElementById("menu-container")
+        if (menuContainer) {
+          menuContainer.innerHTML = `
+          <div class="loading-spinner flex justify-center py-8">
+            <div class="spinner"></div>
+          </div>
+        `
 
-        // Simulate network delay for loading effect
-        setTimeout(() => {
-          menuContainer.innerHTML = ""
+          // Simulate network delay for loading effect
+          setTimeout(() => {
+            menuContainer.innerHTML = ""
 
-          // Fuzzy search function
-          function fuzzyMatch(str, pattern) {
-            pattern = pattern.toLowerCase()
-            str = str.toLowerCase()
+            // Fuzzy search function
+            function fuzzyMatch(str, pattern) {
+              pattern = pattern.toLowerCase()
+              str = str.toLowerCase()
 
-            let patternIdx = 0
-            let strIdx = 0
-            const match = false
+              let patternIdx = 0
+              let strIdx = 0
+              const match = false
 
-            while (patternIdx < pattern.length && strIdx < str.length) {
-              if (pattern[patternIdx] === str[strIdx]) {
-                patternIdx++
+              while (patternIdx < pattern.length && strIdx < str.length) {
+                if (pattern[patternIdx] === str[strIdx]) {
+                  patternIdx++
+                }
+                strIdx++
               }
-              strIdx++
+
+              return patternIdx === pattern.length
             }
 
-            return patternIdx === pattern.length
-          }
+            // Filter all menu items based on fuzzy search
+            const filteredItems = allMenuItems.filter(
+              (item) =>
+                fuzzyMatch(item.name, searchTerm) ||
+                fuzzyMatch(item.description, searchTerm) ||
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm),
+            )
 
-          // Filter all menu items based on fuzzy search
-          const filteredItems = allMenuItems.filter(
-            (item) =>
-              fuzzyMatch(item.name, searchTerm) ||
-              fuzzyMatch(item.description, searchTerm) ||
-              item.name.toLowerCase().includes(searchTerm) ||
-              item.description.toLowerCase().includes(searchTerm),
-          )
+            if (filteredItems.length > 0) {
+              const section = createMenuSection("SEARCH RESULTS", filteredItems)
+              menuContainer.appendChild(section)
 
-          if (filteredItems.length > 0) {
-            const section = createMenuSection("SEARCH RESULTS", filteredItems)
-            menuContainer.appendChild(section)
-
-            // Add event listeners to Add to Cart buttons
-            document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
-              button.addEventListener("click", function () {
-                try {
-                  const itemData = JSON.parse(this.getAttribute("data-item"))
-                  cart.addToCart(itemData)
-                } catch (error) {
-                  console.error("Error parsing item data:", error)
-                  cart.showToast("Error adding item to cart", "error")
-                }
+              // Add event listeners to Add to Cart buttons
+              document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+                button.addEventListener("click", function () {
+                  try {
+                    const itemData = JSON.parse(this.getAttribute("data-item"))
+                    cart.addToCart(itemData)
+                  } catch (error) {
+                    console.error("Error parsing item data:", error)
+                    cart.showToast("Error adding item to cart", "error")
+                  }
+                })
               })
-            })
-          } else {
-            // Display "No results found" message
-            const noResults = document.createElement("div")
-            noResults.className = "text-center py-8"
-            noResults.innerHTML = `
-            <p class="text-xl text-brown-900">No results found for "${searchTerm}"</p>
-            <p class="mt-2">Try a different search term or browse our categories.</p>
-          `
-            menuContainer.appendChild(noResults)
-          }
-        }, 300)
-      }
+            } else {
+              // Display "No results found" message
+              const noResults = document.createElement("div")
+              noResults.className = "text-center py-8"
+              noResults.innerHTML = `
+              <p class="text-xl text-brown-900">No results found for "${searchTerm}"</p>
+              <p class="mt-2">Try a different search term or browse our categories.</p>
+            `
+              menuContainer.appendChild(noResults)
+            }
+          }, 300)
+        }
+      })
     })
   }
 
@@ -1379,6 +1643,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("click", (e) => {
     const checkoutModal = document.getElementById("checkout-modal")
     const requestCallModal = document.getElementById("request-call-modal")
+    const promoPopup = document.getElementById("promo-popup")
 
     if (checkoutModal && e.target === checkoutModal) {
       checkoutModal.classList.add("hidden")
@@ -1386,6 +1651,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (requestCallModal && e.target === requestCallModal) {
       requestCallModal.classList.add("hidden")
+    }
+
+    if (promoPopup && e.target === promoPopup) {
+      promoPopup.classList.remove("show")
     }
   })
 
@@ -1395,11 +1664,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const checkoutModal = document.getElementById("checkout-modal")
       const cartSidebar = document.getElementById("cart-sidebar")
       const requestCallModal = document.getElementById("request-call-modal")
+      const promoPopup = document.getElementById("promo-popup")
 
       if (checkoutModal && !checkoutModal.classList.contains("hidden")) {
         checkoutModal.classList.add("hidden")
       } else if (requestCallModal && !requestCallModal.classList.contains("hidden")) {
         requestCallModal.classList.add("hidden")
+      } else if (promoPopup && promoPopup.classList.contains("show")) {
+        promoPopup.classList.remove("show")
       } else if (cartSidebar && !cartSidebar.classList.contains("hidden")) {
         cart.toggleCart()
       }
@@ -1417,10 +1689,10 @@ document.addEventListener("DOMContentLoaded", () => {
     true,
   )
 
-  // Add active class to navigation links based on scroll position
+  // Active class to navigation links based on scroll position
   function setActiveNavLink() {
     const sections = document.querySelectorAll("section[id]")
-    const navLinks = document.querySelectorAll(".nav-link")
+    const navLinks = document.querySelectorAll(".nav-link, .mobile-nav-link")
 
     let currentSection = ""
 
@@ -1471,5 +1743,72 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 3000)
     }
   }
+
+  // Star rating functionality
+  const starButtons = document.querySelectorAll(".star-btn")
+  const ratingInput = document.getElementById("review-rating")
+  const ratingText = document.getElementById("rating-text")
+
+  if (starButtons.length > 0 && ratingInput && ratingText) {
+    starButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const rating = Number.parseInt(btn.getAttribute("data-rating"))
+        ratingInput.value = rating
+
+        // Update star colors
+        starButtons.forEach((star, index) => {
+          if (index < rating) {
+            star.classList.remove("text-gray-300")
+            star.classList.add("text-yellow-500")
+          } else {
+            star.classList.remove("text-yellow-500")
+            star.classList.add("text-gray-300")
+          }
+        })
+
+        // Update rating text
+        const ratingTexts = ["Select your rating", "Poor", "Fair", "Good", "Very Good", "Excellent"]
+        ratingText.textContent = ratingTexts[rating]
+      })
+    })
+  }
+
+  // Women's Month Promotional Popup
+  const promoPopup = document.getElementById("promo-popup")
+  const closePromoBtn = document.getElementById("close-promo")
+
+  if (promoPopup && closePromoBtn) {
+    // Show the popup when the page loads
+    setTimeout(() => {
+      promoPopup.classList.add("show")
+    }, 2000) // Show after 2 seconds
+
+    // Close the popup when the close button is clicked
+    closePromoBtn.addEventListener("click", () => {
+      promoPopup.classList.remove("show")
+    })
+  }
+
+  // Adjust hero height on page load
+  adjustHeroHeight()
+})
+
+// Add event listener for window load
+window.addEventListener("load", () => {
+  // Detect device type
+  const deviceType = detectDeviceType()
+
+  // Apply device-specific enhancements
+  if (deviceType === "desktop") {
+    enhanceDesktopUI()
+  } else {
+    enhanceMobileUI()
+  }
+
+  // Add enhancement styles
+  addEnhancementStyles()
+
+  // Adjust hero height
+  adjustHeroHeight()
 })
 
